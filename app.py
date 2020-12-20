@@ -68,12 +68,12 @@ async def on_message(context):
 			# ~콘이름
 			log('+09:00', 2, f'"{command}" @ "'+getLocation(context)+'"')
 			dcConName = pymysql.escape_string(command.replace(SUB_PREFIX, ''))
-			database = pymysql.connect(host=DATABASE['host'], port=DATABASE['port'], user=DATABASE['user'], password=DATABASE['password'], database=DATABASE['database'], charset='utf8')
+			database = pymysql.connect(host=DATABASE['host'], port=DATABASE['port'], user=DATABASE['user'], password=DATABASE['password'], database=DATABASE['database'], charset='utf8', cursorclass=pymysql.cursors.DictCursor)
 			cursor = database.cursor()
 			cursor.execute(f'SELECT * FROM `dccon` WHERE `id` = \'{dcConName}\'')
 			searchResult = cursor.fetchone()
 			if(searchResult != None):
-				await context.channel.send(searchResult[len(searchResult)-1])
+				await context.channel.send(searchResult['url'])
 			else:
 				log('+09:00', 0, f'"{dcConName}" is not a registered dccon name @ "'+getLocation(context)+'"')
 

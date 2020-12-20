@@ -10,10 +10,29 @@ cursor = database.cursor()
 def getJSONStyle(text):
 	return text.replace('	', '').replace(' ', '').replace('\n', '').replace('},{', '},\n{')
 
-def getFileFromURL(URL):
-	fileName = URL.split('/')[len(URL.split('/'))-1]
-	fileRaw = requests.get(URL, allow_redirects=True)
-	open(f'./images/{fileName}', 'wb').write(fileRaw.content)
+def getFixedTag(keyword, tag):
+	originList = ['RCT', '롤코타', '계란', '달걀콘', '눈물콘', '냥이', '동숲', '레바콘', '마울어', '마크', '문풍당당', '이풍당당', '예풍당당', '볼트보이콘', '북돼지', '이북리더', '심의콘', '시스카', '젤다', '짜잔콘', '샌즈', '캐피탈리즘호', '카티아', '컴', '컴갤콘', '토드콘', '포켓몬']
+	fixedList = ['롤러코스터타이쿤', '롤러코스터타이쿤', '껍질미리깐달걀', '껍질미리깐달걀', '눈물', '고양이', '동물의숲', '레바', '마이너울트라어드벤처', '마인크래프트', '당당', '당당', '당당', '볼트보이', '김정은', '김정은', '심의', '시티즈스카이라인', '젤다의전설', '제프카플란', '언더테일', '루세티아', '카티아마나간', '컴퓨터', '컴퓨터갤러리', '토드하워드', '포켓몬스터']
+
+	if(keyword == '태극기' and tag == '국뽕'):
+		tag = '국기'
+	elif(keyword == '펄럭2' and tag == '깃발'):
+		tag = '국뽕'
+	elif(keyword == '유다희5' and tag == '다크소울'):
+		tag = '유다이'
+	elif(keyword == '받아치기1' and tag == '애니' or keyword == '안녕하살법1' and tag == '애니'):
+		tag = '카구야님은고백받고싶어'
+	elif(keyword == '변태이용가' and tag == '히토미'):
+		tag = '심의'
+	else:
+		if(tag in originList):
+			tag = fixedList[originList.index(tag)]
+	return tag
+
+#def getFileFromURL(URL):
+#	fileName = URL.split('/')[len(URL.split('/'))-1]
+#	fileRaw = requests.get(URL, allow_redirects=True)
+#	open(f'./images/{fileName}', 'wb').write(fileRaw.content)
 
 funzinnuFDF = '['+getJSONStyle(requests.get('https://www.funzinnu.com/stream/dccon.js').text[15:-3])+']'
 
@@ -132,19 +151,23 @@ else:
 
 for i in range(len(poopkiODFJSON)):
 	for j in range(len(poopkiODFJSON[i]['keywords'])):
-		cursor.execute(f'INSERT IGNORE INTO `dccon` (`id`, `tag`, `url`) values (\'{poopkiODFJSON[i]["keywords"][j]}\', \'{poopkiODFJSON[i]["tags"][0]}\', \'{poopkiODFJSON[i]["path"]}\')')
+		poopkiODFJSON[i]['tags'][0] = getFixedTag(poopkiODFJSON[i]["keywords"][j], poopkiODFJSON[i]['tags'][0])
+		cursor.execute(f'INSERT IGNORE INTO `dccon` (`id`, `tag`, `url`, `last_update`) values (\'{poopkiODFJSON[i]["keywords"][j]}\', \'{poopkiODFJSON[i]["tags"][0]}\', \'{poopkiODFJSON[i]["path"]}\', CURDATE())')
 
 for i in range(len(yeokkaODFJSON)):
 	for j in range(len(yeokkaODFJSON[i]['keywords'])):
-		cursor.execute(f'INSERT IGNORE INTO `dccon` (`id`, `tag`, `url`) values (\'{yeokkaODFJSON[i]["keywords"][j]}\', \'{yeokkaODFJSON[i]["tags"][0]}\', \'{yeokkaODFJSON[i]["path"]}\')')
+		yeokkaODFJSON[i]['tags'][0] = getFixedTag(yeokkaODFJSON[i]["keywords"][j], yeokkaODFJSON[i]['tags'][0])
+		cursor.execute(f'INSERT IGNORE INTO `dccon` (`id`, `tag`, `url`, `last_update`) values (\'{yeokkaODFJSON[i]["keywords"][j]}\', \'{yeokkaODFJSON[i]["tags"][0]}\', \'{yeokkaODFJSON[i]["path"]}\', CURDATE())')
 
 for i in range(len(funzinnuFDFJSON)):
 	for j in range(len(funzinnuFDFJSON[i]['keywords'])):
-		cursor.execute(f'INSERT IGNORE INTO `dccon` (`id`, `tag`, `url`) values (\'{funzinnuFDFJSON[i]["keywords"][j]}\', \'{funzinnuFDFJSON[i]["tags"][0]}\', \'{funzinnuFDFJSON[i]["uri"]}\')')
+		funzinnuFDFJSON[i]['tags'][0] = getFixedTag(funzinnuFDFJSON[i]["keywords"][j], funzinnuFDFJSON[i]['tags'][0])
+		cursor.execute(f'INSERT IGNORE INTO `dccon` (`id`, `tag`, `url`, `last_update`) values (\'{funzinnuFDFJSON[i]["keywords"][j]}\', \'{funzinnuFDFJSON[i]["tags"][0]}\', \'{funzinnuFDFJSON[i]["uri"]}\', CURDATE())')
 
 for i in range(len(telkODFJSON)):
 	for j in range(len(telkODFJSON[i]['keywords'])):
-		cursor.execute(f'INSERT IGNORE INTO `dccon` (`id`, `tag`, `url`) values (\'{telkODFJSON[i]["keywords"][j]}\', \'{telkODFJSON[i]["tags"][0]}\', \'{telkODFJSON[i]["path"]}\')')
+		telkODFJSON[i]['tags'][0] = getFixedTag(telkODFJSON[i]["keywords"][j], telkODFJSON[i]['tags'][0])
+		cursor.execute(f'INSERT IGNORE INTO `dccon` (`id`, `tag`, `url`, `last_update`) values (\'{telkODFJSON[i]["keywords"][j]}\', \'{telkODFJSON[i]["tags"][0]}\', \'{telkODFJSON[i]["path"]}\', CURDATE())')
 
 database.commit()
 
