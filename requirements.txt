@@ -1,0 +1,6 @@
+discord
+asyncio
+pymysql
+python-dotenv
+datetime
+pytz
