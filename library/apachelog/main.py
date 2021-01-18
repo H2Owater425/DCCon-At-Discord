@@ -55,7 +55,7 @@ class ApacheLog:
 				os.mkdir('/'.join(export.split('/')[:-1]))
 
 			try:
-				logFile = open(export, 'w', encoding='utf8')
+				logFile = open(export, 'a', encoding='utf8')
 
 			except PermissionError:
 				raise PermissionError(f'wrong or have no permission for log file("{export}")')
