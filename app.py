@@ -1,13 +1,15 @@
 #-*- coding:utf-8 -*-
-import asyncio, discord, json, os, pymysql, math, re
+import asyncio, discord, json, pymysql, re
 from dotenv import load_dotenv
 from library.apachelog import ApacheLog
+from math import ceil
+from os import getenv
 
 load_dotenv(verbose=True, encoding='utf-8')
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-BOT_PREFIX = os.getenv('BOT_PREFIX')
-BOT_SUB_PREFIX = os.getenv('BOT_SUB_PREFIX')
+BOT_TOKEN = getenv('BOT_TOKEN')
+BOT_PREFIX = getenv('BOT_PREFIX')
+BOT_SUB_PREFIX = getenv('BOT_SUB_PREFIX')
 BOT_COMMAND = {
 	'system': {
 		'help': {
@@ -27,8 +29,8 @@ BOT_COMMAND = {
 	}
 }
 PEPRE_COLOR = 0x5c7fd1
-DATABASE = json.loads(os.getenv('DATABASE').replace('\'', '"'))
-log = ApacheLog(export=os.getenv('LOG_FILE_PATH')).log
+DATABASE = json.loads(getenv('DATABASE').replace('\'', '"'))
+log = ApacheLog(export=getenv('LOG_FILE_PATH')).log
 
 class Client(discord.Client):
 	def fetchDatabaseData(self, query: str, bind_parameter: tuple=()):
@@ -61,7 +63,7 @@ class Client(discord.Client):
 
 		return f'{guild.name} > {channel.name} > {user.name}'
 
-	
+
 
 	async def on_ready(self):
 		# When bot started
@@ -142,7 +144,7 @@ class Client(discord.Client):
 
 					searchResult = self.fetchDatabaseData(f'SELECT DISTINCT `tag` FROM `{DATABASE["dcConTable"]}` ORDER BY `tag` ASC')
 					totalTagCount = len(searchResult)
-					totalPageCount = math.ceil(totalTagCount/10)
+					totalPageCount = ceil(totalTagCount/10)
 					searchResult = searchResult[:10]
 
 					if(len(searchResult) == 0):
@@ -175,7 +177,7 @@ class Client(discord.Client):
 					dcConTag = pymysql.escape_string(argument[0])
 					searchResult = self.fetchDatabaseData(f'SELECT `id`, `url` FROM `{DATABASE["dcConTable"]}`  WHERE `tag` = \'{dcConTag}\' ORDER BY `id` ASC')
 					totalTagCount = len(searchResult)
-					totalPageCount = math.ceil(totalTagCount/10)
+					totalPageCount = ceil(totalTagCount/10)
 					searchResult = searchResult[:10]
 
 					if(len(searchResult) == 0):
@@ -271,7 +273,7 @@ class Client(discord.Client):
 
 				searchResult = self.fetchDatabaseData(f'SELECT DISTINCT `tag` FROM `{DATABASE["dcConTable"]}` ORDER BY `tag` ASC')
 				totalTagCount = len(searchResult)
-				totalPageCount = math.ceil(totalTagCount/10)
+				totalPageCount = ceil(totalTagCount/10)
 				searchResult = searchResult[10*currentPage:10+10*currentPage]
 
 				if(len(searchResult) == 0):
@@ -311,7 +313,7 @@ class Client(discord.Client):
 				dcConTag = message.embeds[0].fields[0].name
 				searchResult = self.fetchDatabaseData(f'SELECT `id`, `url` FROM `{DATABASE["dcConTable"]}`  WHERE `tag` = \'{dcConTag}\' ORDER BY `id` ASC')
 				totalTagCount = len(searchResult)
-				totalPageCount = math.ceil(totalTagCount/10)
+				totalPageCount = ceil(totalTagCount/10)
 				searchResult = searchResult[10*currentPage:10+10*currentPage]
 
 				if(len(searchResult) == 0):
